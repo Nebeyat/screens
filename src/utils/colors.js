@@ -30,6 +30,11 @@ export const lightTheme = {
     success: '#4CAF50',
     error: '#FF5252',
     warning: '#FFC107',
+    surfaceSecondary: '#F5F7FA',
+    textMuted: '#8AAAC8',
+    accentPrimary: '#0057ff',
+    accentSecondary: '#00B8D9',
+    tagFill: '#EBF0FF',
 };
 
 const themes = {

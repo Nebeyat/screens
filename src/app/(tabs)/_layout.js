@@ -3,17 +3,28 @@ import TaskProvider from "../../contexts/taskContexts";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import ColorProvider, { useColors } from "../../contexts/colorContext"; 
 import { SystemBars } from "react-native-edge-to-edge";
-import OnBoarding from '../../components/onBoarding';
+//import OnBoarding from '../../components/onBoarding';
 import { useState, useEffect } from 'react';
 import { getItems } from "../../utils/storage";
-  
+ import { useFonts, Syne_400Regular, 
+    Syne_500Medium, 
+    Syne_600SemiBold, 
+    Syne_700Bold, 
+    Syne_800ExtraBold } from '@expo-google-fonts/syne'; 
   export default function layout() {
   
-  
+  const[fontsLoaded] = useFonts({
+     Syne_400Regular, 
+    Syne_500Medium, 
+    Syne_600SemiBold, 
+    Syne_700Bold, 
+    Syne_800ExtraBold});
 
   
     const { colors, statusBarStyle } = useColors();
-  
+  if (!fontsLoaded) {
+    return null;
+  }
     return (
       <>
         <SystemBars style={statusBarStyle}/>
