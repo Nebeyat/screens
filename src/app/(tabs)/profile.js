@@ -1,22 +1,24 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, Text, Button } from 'react-native';
 import useTheme from '../../store/useTheme';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '../../components/header';
 
 const Profile = () => {
     const { toggleTheme, spacing, fontSize, colors } = useTheme();
+    const styles = createStyles(colors, fontSize, spacing);
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={{ padding: spacing.m, fontSize: fontSize.xxx }}>Profile Screen</Text>
             <Button title="Change Appearance" onPress={toggleTheme} color={colors.primary} />
-        </View>
+        </SafeAreaView>
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors, fontSize, spacing) => StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: colors.background,
     },
 })
 
