@@ -1,5 +1,4 @@
 import { surface } from "react-native-paper"
-
 export const darkStatusBar = 'dark'
 export const lightStatusBar = 'light'
 
@@ -16,7 +15,15 @@ export const darkTheme = {
     error: '#FF5252',
     warning: '#FFC107',
     ripple: 'rgba(128,202,255,0.12)',
-}
+    surfaceSecondary: '#192333',
+    textMuted: '#5C7191',
+    accentPrimary: '#80CAFE',
+    accentSecondary: '#00B8D9',
+    onAccentPrimary: '#003258',
+    onSurfaceSecondary: '#E0EEFF',
+    tagFill: '#2c394b',
+    overlayLight: 'rgba(0, 0, 0, 0.5)',
+};
 
 export const lightTheme = {
     background: '#F5F7FA',
@@ -34,7 +41,10 @@ export const lightTheme = {
     textMuted: '#8AAAC8',
     accentPrimary: '#0057ff',
     accentSecondary: '#00B8D9',
+    onAccentPrimary: '#FFFFFF',
+    onSurfaceSecondary: '#1A1C1E',
     tagFill: '#EBF0FF',
+    overlayLight: 'rgba(255, 255, 255, 0.73)',
 };
 
 const themes = {
