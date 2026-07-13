@@ -22,7 +22,7 @@ export const darkTheme = {
     onAccentPrimary: '#003258',
     onSurfaceSecondary: '#E0EEFF',
     tagFill: '#2c394b',
-    overlayLight: 'rgba(0, 0, 0, 0.5)',
+    overlayLight: 'rgba(121, 117, 117, 0.5)',
 };
 
 export const lightTheme = {
@@ -44,7 +44,8 @@ export const lightTheme = {
     onAccentPrimary: '#FFFFFF',
     onSurfaceSecondary: '#1A1C1E',
     tagFill: '#EBF0FF',
-    overlayLight: 'rgba(255, 255, 255, 0.73)',
+    overlayLight: 'rgba(178, 159, 159, 0.73)',
+    
 };
 
 const themes = {

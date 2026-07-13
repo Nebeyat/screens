@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { StyleSheet, View, Alert,FlatList } from "react-native";
+import { StyleSheet, View, Alert,FlatList ,Text,Pressable} from "react-native";
 import Date from "../../components/date";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useTheme from "../../store/useTheme";
@@ -9,6 +9,9 @@ import Icon from "../../components/icon";
 import SearchInput from "../../components/searchInput";
 import Chips from "../../components/chips";
 import Card from "../../components/card"
+import {DATA} from "../../data/data";
+import ListView from "../../components/listView";   
+
 const Index = () => {
   const [searchText, setSearchText] = useState("");
   const { colors, fontSize, spacing, toggleTheme,themeMode  } = useTheme();
@@ -17,19 +20,20 @@ const Index = () => {
   const notification = () => {
     Alert.alert("Notifications", "You have no new notifications");
   };
-  const DATA = [
-   { id:"1",
-    title:"First Item"
-  },
-  {
-    id:"2",
-    title:"Second Item"
-  },
-  {
-    id:"3",
-    title:"Third Item"
+  
+  const ListHeader = () => {
+    return(
+      <View style={styles.headerText}>
+        <Text style={styles.titleText}>Header</Text>
+        <Pressable onPress={() => 
+          
+          Alert.alert ("see all","you pressed")} >
+          <Text style={{color:colors.accentPrimary}}>See all</Text>
+        </Pressable>
+      </View>
+    )
+
   }
-  ]
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,7 +50,7 @@ const Index = () => {
           <Header header={"fafiNews"} />
         </View>
         <View style={{ flexDirection: "row" }}>
-          <Icon name={"name"} action={toggleTheme} />
+          <Icon name={name} action={toggleTheme} />
           <Icon name="notifications-outline" action={notification} />
         </View>
       </View>
@@ -59,9 +63,11 @@ const Index = () => {
         <>
         <SearchInput value={searchText} onChangeText={setSearchText} />
          <Chips />
+         <Card title={"Top Stories"}/>
+         <ListHeader/>
         </>
       }
-       renderItem={({item}) => <Card Title= {item.title}/>}
+       renderItem={({item}) => <ListView title= {item.title} postedTime={item.postedTime} readTime={item.readTime} tagLable={item.tagLable} imageUrl={item.imageUrl}/>}
        showsVerticalScrollIndicator={false}
       />
 
@@ -79,6 +85,18 @@ const createStyles = (colors, fontSize, spacing) =>
       flex: 1,
       backgroundColor: colors.background,
       paddingHorizontal: spacing.l,
+    },
+    headerText:{
+       flex:1,
+       flexDirection:"row",
+       justifyContent:"space-between",
+       alignItems:"center",
+    },
+    titleText:{
+  fontSize:fontSize.newsListTitle,
+  fontFamily:"syle_600SemiBold",
+  color:colors.textPrimary,
+  marginTop:spacing.xx
     },
   });
 
