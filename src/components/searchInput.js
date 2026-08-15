@@ -4,7 +4,7 @@ import { TextInput } from 'react-native-paper';
 import useTheme from '../store/useTheme';
 import Icon from './icon';
 
-const SearchInput = ({ value, onChangeText }) => {
+const SearchInput = ({ value, onChangeText,placeholder }) => {
     const { colors, fontSize, spacing } = useTheme();
     const styles = createStyles(colors, fontSize, spacing);
 
@@ -13,13 +13,27 @@ const SearchInput = ({ value, onChangeText }) => {
     }
 
     return (
-        <View style={styles.container}>
-            <Icon name="search-outline" action={() => searchTopic(value)} />
-            <TextInput
+        <View 
+            styles={[
+                styles.container,
+                {
+                backgroundColor:colors.surfaceSecondary,
+                padding: spacing.s,
+                borderRadius:spacing.m,
+                marginTop:spacing.x,
+            }
+
+            ]}>
+                <Icon name="search-outline" action={() => searchTopic(value)} />
+                <TextInput
+                style={[
+                    styles.input,
+                    {colors:colors.textPrimary,fontSize:fontSize.body},
+                ]}
                 value={value}
                 onChangeText={onChangeText}
-                style={styles.input}
-                placeholder='search news,topics,author...'
+                
+                placeholder={placeholder}
                 placeholderTextColor={colors.textSecondary}
             />
         </View>

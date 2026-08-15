@@ -61,7 +61,7 @@ const Index = () => {
      
       ListHeaderComponent={
         <>
-        <SearchInput value={searchText} onChangeText={setSearchText} />
+        <SearchInput value={searchText} onChangeText={setSearchText} placeholder={'search news,topics,author ..'} />
          <Chips />
          <Card title={"Top Stories"}/>
          <ListHeader/>
