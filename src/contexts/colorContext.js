@@ -22,5 +22,6 @@ export const useColors = () => {
   if (!context) {
     throw new Error('useColors must be used within a colorContext');  
   }
-  return context;
-};  
+  return context; 
+
+}

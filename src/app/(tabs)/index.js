@@ -67,7 +67,7 @@ const Index = () => {
          <ListHeader/>
         </>
       }
-       renderItem={({item}) => <ListView title= {item.title} postedTime={item.postedTime} readTime={item.readTime} tagLable={item.tagLable} imageUrl={item.imageUrl}/>}
+       renderItem={({item}) => <ListView title= {item.title} postedTime={item.postedTime} readTime={item.readTime} categoryName={item.categoryName} imageUrl={item.imageUrl}/>}
        showsVerticalScrollIndicator={false}
       />
 

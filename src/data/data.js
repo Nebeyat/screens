@@ -3,7 +3,7 @@ export const DATA = [
     title:"First Item",
     postedTime:"2 hours ago",
     readTime:"5 min read",
-    tagLable:"poletics",
+    categoryName:"poletics",
     imageUrl:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1170&q=80'
   },
   {
@@ -11,7 +11,7 @@ export const DATA = [
     title:"Second Item",
     postedTime:"2 hours ago",
     readTime:"5 min read",
-    tagLable:"technology",
+    categoryName:"technology",
     imageUrl:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1170&q=80'
   },
   {
@@ -19,7 +19,8 @@ export const DATA = [
     title:"Third Item",
     postedTime:"2 hours ago",
     readTime:"3 min read",
-    tagLable:"health",
+    categoryName:"health",
     imageUrl:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1170&q=80'
+    
   }
   ];

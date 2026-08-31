@@ -37,7 +37,7 @@ export default function Layout() {
           tabBarStyle: {
             backgroundColor: colors.background,
             borderTopWidth: 0,
-            elevation: 0, // ✅ Correct way to remove shadow on Android
+            elevation: 0, 
           },
           tabBarActiveTintColor: colors.accentPrimary,
           tabBarInactiveTintColor: colors.textMuted,

@@ -7,7 +7,7 @@ import useBookmarkStore from "../store/useBookmarkStore";
 import { getItems } from '../utils/storage';
 import Tag from './tag';
 
-const ListView = ({imageUrl, tagLable, title, postedTime, readTime}) => {
+const ListView = ({imageUrl, categoryName, title, postedTime, readTime}) => {
     const {colors, fontSize, spacing} = useTheme();
     const {addBookmark, removeBookmark} = useBookmarkStore();
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -55,7 +55,7 @@ const ListView = ({imageUrl, tagLable, title, postedTime, readTime}) => {
                 />
             </Pressable>
             <View style={styles.content}>
-                <Tag tagLable={tagLable} color={colors.overlayLight}/>
+                <Tag categoryName={categoryName} color={colors.overlayLight}/>
                 <Text
                     numberOfLines={2}
                     style={[styles.titleText, {
