@@ -1,20 +1,43 @@
 import { create } from 'zustand';
-import { setItems, removeItem, getItems } from '../utils/storage';
+import { setItems, getItems } from '../utils/storage';
 
 const useBookmarkStore = create((set, get) => ({
-    bookmarks: [],
+  bookmarks: [],
 
-    addBookmark: async (bookmark) => {
-        const updatedBookmarks = [...get().bookmarks, bookmark];
-        set({ bookmarks: updatedBookmarks });
-        await setItems('bookmarks', JSON.stringify(updatedBookmarks));
-    },
+  setBookmarks: (bookmarks) => set({ bookmarks }),
 
-    removeBookmark: async (bookmarkId) => {
-        const updatedBookmarks = get().bookmarks.filter((b) => b.id !== bookmarkId);
-        set({ bookmarks: updatedBookmarks });
-        await setItems('bookmarks', JSON.stringify(updatedBookmarks));
-    },
+  loadBookmarks: async () => {
+    try {
+      const storedBookmarks = await getItems("bookmarks");
+      if (storedBookmarks) {
+        set({ bookmarks: JSON.parse(storedBookmarks) });
+      }
+    } catch (error) {
+      console.error("Error loading bookmarks:", error);
+    }
+  },
+
+  isBookmarked: (articleId) => {
+    return get().bookmarks.some((article) => article._id === articleId);
+  },
+
+  addBookmark: async (article) => {
+    const exists = get().bookmarks.some((b) => b._id === article._id);
+    if (exists) return;
+
+    const updatedBookmarks = [...get().bookmarks, article];
+    set({ bookmarks: updatedBookmarks });
+    await setItems('bookmarks', JSON.stringify(updatedBookmarks));
+  },
+
+  // Accepts the full item object: removeBookmark(item)
+  removeBookmark: async (article) => {
+    const updatedBookmarks = get().bookmarks.filter(
+      (item) => item._id !== article._id
+    );
+    set({ bookmarks: updatedBookmarks });
+    await setItems('bookmarks', JSON.stringify(updatedBookmarks));
+  },
 }));
 
 export default useBookmarkStore;

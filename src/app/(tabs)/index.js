@@ -1,6 +1,5 @@
-import React from "react";
-import { useState } from "react";
-import { StyleSheet, View, Alert,FlatList ,Text,Pressable} from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Alert, FlatList, Text, Pressable } from "react-native";
 import Date from "../../components/date";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useTheme from "../../store/useTheme";
@@ -8,35 +7,49 @@ import Header from "../../components/header";
 import Icon from "../../components/icon";
 import SearchInput from "../../components/searchInput";
 import Chips from "../../components/chips";
-import Card from "../../components/card"
-import {DATA} from "../../data/data";
-import ListView from "../../components/listView";   
+import Card from "../../components/card";
+import ListView from "../../components/listView";
+import { useQuery } from "convex/react"; // Fixed case sensitivity
+import { api } from "../../../convex/_generated/api";
 
 const Index = () => {
   const [searchText, setSearchText] = useState("");
-  const { colors, fontSize, spacing, toggleTheme,themeMode  } = useTheme();
+  const { colors, fontSize, spacing, toggleTheme, themeMode } = useTheme();
   const styles = createStyles(colors, fontSize, spacing);
   const name = themeMode === 'light' ? 'moon-outline' : 'sunny-outline';
+
+  const articles = useQuery(api.articles.getAllArticles);
+
   const notification = () => {
     Alert.alert("Notifications", "You have no new notifications");
   };
-  
-  const ListHeader = () => {
-    return(
-      <View style={styles.headerText}>
-        <Text style={styles.titleText}>Header</Text>
-        <Pressable onPress={() => 
-          
-          Alert.alert ("see all","you pressed")} >
-          <Text style={{color:colors.accentPrimary}}>See all</Text>
-        </Pressable>
-      </View>
-    )
 
+  const ListHeader = () => (
+    <View style={styles.headerText}>
+      <Text style={styles.titleText}>Header</Text>
+      <Pressable onPress={() => Alert.alert("see all", "you pressed")}>
+        <Text style={{ color: colors.accentPrimary }}>See all</Text>
+      </Pressable>
+    </View>
+  );
+
+  if (!articles) {
+    return (
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={{ color: colors.textSecondary }}>loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
   }
 
+  // Filter articles based on search query safely
+  const filteredArticles = articles.filter((item) =>
+    item.title?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <View
         style={{
           flexDirection: "row",
@@ -56,25 +69,23 @@ const Index = () => {
       </View>
 
       <FlatList
-      data={DATA}
-      keyExtractor={(item)=> item.id}
-     
-      ListHeaderComponent={
-        <>
-        <SearchInput value={searchText} onChangeText={setSearchText} placeholder={'search news,topics,author ..'} />
-         <Chips />
-         <Card title={"Top Stories"}/>
-         <ListHeader/>
-        </>
-      }
-       renderItem={({item}) => <ListView title= {item.title} postedTime={item.postedTime} readTime={item.readTime} categoryName={item.categoryName} imageUrl={item.imageUrl}/>}
-       showsVerticalScrollIndicator={false}
+        data={filteredArticles}
+        keyExtractor={(item) => item._id}
+        ListHeaderComponent={
+          <>
+            <SearchInput
+              value={searchText}
+              onChangeText={setSearchText}
+              placeholder={'search news,topics,author ..'}
+            />
+            <Chips />
+            <Card title={"Top Stories"} />
+            <ListHeader />
+          </>
+        }
+        renderItem={({ item }) => <ListView item={item} />}
+        showsVerticalScrollIndicator={false}
       />
-
-      
-
-      
-      
     </SafeAreaView>
   );
 };
@@ -86,17 +97,16 @@ const createStyles = (colors, fontSize, spacing) =>
       backgroundColor: colors.background,
       paddingHorizontal: spacing.l,
     },
-    headerText:{
-       flex:1,
-       flexDirection:"row",
-       justifyContent:"space-between",
-       alignItems:"center",
+    headerText: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
-    titleText:{
-  fontSize:fontSize.newsListTitle,
-  fontFamily:"syle_600SemiBold",
-  color:colors.textPrimary,
-  marginTop:spacing.xx
+    titleText: {
+      fontSize: fontSize.newsListTitle,
+      fontFamily: "syne_600SemiBold", // Fixed font name typo
+      color: colors.textPrimary,
+      marginTop: spacing.xx,
     },
   });
 

@@ -1,4 +1,4 @@
-
+/*
 import Onboarding from 'react-native-onboarding-swiper';
 import {Image} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -58,4 +58,4 @@ export default function OnBoarding(){
 /></SafeAreaView>
 
     )
-}
+} */

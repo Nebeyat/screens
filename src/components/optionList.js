@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import useTheme from '../store/useTheme';
 import Icon from "./icon";
@@ -18,8 +18,10 @@ const OptionList = ({ preferences = [] }) => {
       showsVerticalScrollIndicator={false}
     >
       {preferences?.map((pref, index) => (
-        <View
+        <TouchableOpacity
           key={index}
+          activeOpacity={0.7}
+          onPress={pref.action}
           style={{
             flexDirection: "row",
             alignItems: 'center',
@@ -33,7 +35,6 @@ const OptionList = ({ preferences = [] }) => {
           <Icon 
             name={pref.iconName || pref.icon}
             color={colors.textPrimary}
-            action={pref.action}
             iconBackground={'transparent'}
           />
 
@@ -63,14 +64,14 @@ const OptionList = ({ preferences = [] }) => {
           <Icon 
             name="chevron-forward-outline" 
             color={colors.textSecondary}
-            action={pref.action}
             iconBackground={'transparent'}
             style={{ marginLeft: 'auto' }}
           />
-        </View>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
 };
 
 export default OptionList;
+                

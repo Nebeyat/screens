@@ -1,102 +1,87 @@
-import { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, Pressable, Text, Alert } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Image, Pressable, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import useTheme from '../store/useTheme';
 import Caption from './caption';
 import useBookmarkStore from "../store/useBookmarkStore";
-import { getItems } from '../utils/storage';
 import Tag from './tag';
 
-const ListView = ({imageUrl, categoryName, title, postedTime, readTime}) => {
-    const {colors, fontSize, spacing} = useTheme();
-    const {addBookmark, removeBookmark} = useBookmarkStore();
-    const [isBookmarked, setIsBookmarked] = useState(false);
+const ListView = ({ item }) => {
+  const { colors, fontSize, spacing } = useTheme();
+  const { bookmarks, addBookmark, removeBookmark } = useBookmarkStore();
 
-    useEffect(() => {
-        const checkBookmarkStatus = async () => {
-            const bookmarks = await getItems('bookmarks');
-            console.log(bookmarks);
-            if(bookmarks){
-                const parsedBookmarks = JSON.parse(bookmarks);
-                console.log(parsedBookmarks);
-                const isBookmarked = parsedBookmarks.some(
-                    (articleTitle) => {
-                        const result = articleTitle === title;
-                        console.log(articleTitle, "---", title);
-                        return result;
-                    }
-                );
-                setIsBookmarked(isBookmarked);
-            }
-            else{
-                setIsBookmarked(false);
-            }
-        };
-        checkBookmarkStatus();
-    }, [title]);
+  // Guard clause: return null if item is undefined or null
+  if (!item) {
+    return null;
+  }
 
-    const handleBookmarkPress = () => {
-        if(isBookmarked){
-            removeBookmark(title);
-            console.log("Bookmark removed:", title);
-        } else {
-            addBookmark(title);
-            console.log("Bookmark added:", title);
-        }
-        setIsBookmarked(!isBookmarked);
-    };
+  const isBookmarked = bookmarks.some((b) => b?._id === item._id);
 
-    return (
-        <View style={{flexDirection: "row", alignItems: "flex-start", paddingVertical: spacing.m}}>
-            <Pressable onPress={() => Alert.alert("News Articles")}>
-                <Image
-                    source={{uri: imageUrl}}
-                    style={[styles.imageCard, {borderRadius: spacing.m}]}
-                />
-            </Pressable>
-            <View style={styles.content}>
-                <Tag categoryName={categoryName} color={colors.overlayLight}/>
-                <Text
-                    numberOfLines={2}
-                    style={[styles.titleText, {
-                        color: colors.textPrimary,
-                        fontSize: fontSize.bodylarge,
-                    }]}
-                >{title}</Text>
-            </View>
-            <View style={styles.footer}>
-                <Caption postedTime={postedTime} readTime={readTime}/>
-                <Ionicons
-                    name={isBookmarked ? "bookmark" : "bookmark-outline"}
-                    size={20}
-                    color={colors.accentPrimary}
-                    onPress={handleBookmarkPress}
-                />
-            </View>
-        </View>
-    );
-}
+  const handleBookmark = () => {
+    if (isBookmarked) {
+      removeBookmark(item);
+    } else {
+      addBookmark(item);
+    }
+  };
+
+  return (
+    <View style={[
+      styles.container,
+      { paddingVertical: spacing.m, borderBottomColor: colors.border || "#E5E5E5" }
+    ]}>
+      <Pressable onPress={() => console.log(`pressed on article: ${item.title}`)}>
+        <Image
+          source={{ uri: item.imageUrl }}
+          style={[styles.imageCard, { borderRadius: spacing.m }]}
+        />
+      </Pressable>
+
+      <View style={styles.content}>
+        {item.tagLabel && <Tag tagLabel={item.tagLabel} />}
+        <Text
+          numberOfLines={2}
+          style={[styles.titleText, { color: colors.textPrimary, fontSize: fontSize.body }]}
+        >
+          {item.title}
+        </Text>
+      </View>
+
+      <View style={styles.footer}>
+        <Caption ago={item.ago} color={colors.textSecondary} readTime={item.readTime} />
+        <Ionicons
+          name={isBookmarked ? "bookmark" : "bookmark-outline"}
+          size={20}
+          color={isBookmarked ? (colors.accentPrimary || "#0B7AFF") : colors.textSecondary}
+          onPress={handleBookmark}
+        />
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    imageCard: {
-        width: 110,
-        height: 110,
-    },
-    titleText: {
-        marginTop: 10,
-        fontFamily: 'syne_500Medium',
-    },
-    content: {
-        flex: 1,
-        marginLeft: 8,
-        justifyContent: "space-between",
-    },
-    footer: {
-        marginTop: 10,
-        flex: 1,
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  imageCard: {
+    width: 100,
+    height: 100,
+  },
+  titleText: {
+    marginTop: 6,
+    fontFamily: 'syne_500Medium',
+  },
+  content: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: "space-between",
+  },
+  footer: {
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
 });
 
 export default ListView;
