@@ -2,7 +2,7 @@ import {query,mutation} from './_generated/server';
 import { v } from "convex/values";
 import { categories} from "./cat"
 
-export const getAllCategoriies=query({
+export const getAllCategories=query({
     
     handler:async (ctx) => {
     const getCategories =await ctx.db.query("category").collect();

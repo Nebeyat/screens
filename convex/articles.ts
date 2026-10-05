@@ -15,7 +15,26 @@ for(let i=0;i<DATA.length;i++){
     
 }
 
-return "Aii articles created successfully";
+return "All articles created successfully";
     
 },  
 });
+export const getArticleById = query({
+    args:{
+        id:v.id("articles"),
+    },
+    handler:async (ctx,args)=>{
+        const article= await ctx.db.get("articles",args.id);
+        return article;
+        
+    }
+})
+export const getArticleByCategory= query({
+    args:{
+        categoryName:v.string(),
+    },
+    handler:async(ctx,args)=>{
+        const articles =await ctx.db.query("articles").withIndex("by_categoryName", (q)=>q.eq("categoryName",args.categoryName)).collect();
+        return articles;
+    }
+})

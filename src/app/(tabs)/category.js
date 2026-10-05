@@ -1,75 +1,110 @@
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, View, Pressable, Text, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../../components/header';
-import useTheme from '../../store/useTheme';
-import SearchInput from '../../components/searchInput';
-import { categories } from '../../data/categories';
-import CategoryCard from '../../components/categoryCard';
+import React from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  Pressable,
+  View,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import useTheme from "../../store/useTheme";
 
-const Category = () => {
-    const { colors, fontSize, spacing } = useTheme();
-    const styles = createStyles(colors, fontSize, spacing);
-    const [searchCategory, setSearchCategory] = useState('');
+const CategoryScreen = () => {
+  const { colors, fontSize, spacing } = useTheme();
+  const router = useRouter();
+  const categories = useQuery(api.categories.getAllCategories);
 
-    // Filter categories based on search input
-    const filteredCategories = categories.filter(item => 
-        item.categoryName?.toLowerCase().includes(searchCategory.toLowerCase())
-    );
-
+  if (!categories) {
     return (
-        <SafeAreaView style={styles.container}>
-            <FlatList
-                data={filteredCategories}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={2}
-                contentContainerStyle={{ padding: spacing.m, gap: spacing.m }}
-                columnWrapperStyle={{ justifyContent: 'space-between', gap: spacing.m }}
-                // ✅ Rendering top sections in ListHeaderComponent prevents layout overlaps
-                ListHeaderComponent={
-                    <View style={{ marginBottom: spacing.m, gap: spacing.s }}>
-                        <Header header={'category'} />
-                        <Text style={{ color: colors.textSecondary, fontSize: fontSize.body }}>
-                            explore stories across the tech world
-                        </Text>
-                        <SearchInput 
-                            value={searchCategory}
-                            onChangeText={setSearchCategory}
-                            placeholder={'search categories'}
-                        />
-                    </View>
-                }
-                renderItem={({ item }) => (
-                    <Pressable
-                        onPress={() => Alert.alert(`You selected ${item.categoryName}`)}
-                        style={{
-                            flex: 1, // ✅ Uses dynamic grid flex sizing instead of width: '50%'
-                            borderColor: colors.surfaceSecondary,
-                            padding: spacing.l,
-                            borderWidth: 1,
-                            backgroundColor: colors.surfaceBg,
-                            borderRadius: spacing.m,
-                        }}
-                    >
-                        <CategoryCard
-                            iconName={item.iconName}
-                            iconColor={item.iconColor}
-                            iconBackground={item.iconBackground}
-                            categoryName={item.categoryName}
-                            articleCount={item.articleCount}
-                        />
-                    </Pressable>
-                )}
-            />
-        </SafeAreaView>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.accentPrimary} />
+        </View>
+      </SafeAreaView>
     );
+  }
+
+  // Filter out 'All' or empty category if present
+  const categoryData = categories.filter((cat) => cat.categoryName !== "All");
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={["top", "left", "right"]}>
+      <View style={styles.header}>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary, fontSize: fontSize.title }]}>
+          Categories
+        </Text>
+      </View>
+
+      <FlatList
+        data={categoryData}
+        keyExtractor={(item) => item._id}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        contentContainerStyle={{ paddingHorizontal: spacing.m, paddingBottom: spacing.l }}
+        renderItem={({ item }) => (
+          <Pressable
+            style={({ pressed }) => [
+              styles.card,
+              {
+                backgroundColor: colors.cardBackground || colors.surfaceSecondary || "#F3F4F6",
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+            onPress={() => router.push(`/categories/${item.categoryName}`)}
+          >
+            <Text style={[styles.cardText, { color: colors.textPrimary, fontSize: fontSize.body }]}>
+              {item.categoryName}
+            </Text>
+          </Pressable>
+        )}
+      />
+    </SafeAreaView>
+  );
 };
 
-const createStyles = (colors, fontSize, spacing) => StyleSheet.create({
-    container: {
-        backgroundColor: colors.background,
-        flex: 1,
-    }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  headerTitle: {
+    fontWeight: "700",
+  },
+  row: {
+    justifyContent: "space-between",
+    marginBottom: 12,
+    gap: 12,
+  },
+  card: {
+    flex: 1,
+    height: 100,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 12,
+    // Elevation/Shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  cardText: {
+    fontWeight: "600",
+    textAlign: "center",
+  },
 });
 
-export default Category;
+export default CategoryScreen;

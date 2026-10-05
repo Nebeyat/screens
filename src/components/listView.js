@@ -1,16 +1,18 @@
 import React from 'react';
 import { StyleSheet, View, Image, Pressable, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router'; 
 import useTheme from '../store/useTheme';
 import Caption from './caption';
 import useBookmarkStore from "../store/useBookmarkStore";
-import Tag from './tag';
+import Tag from './tag'; 
+import {ago} from "../utils/ago";
 
 const ListView = ({ item }) => {
+  const router = useRouter();
   const { colors, fontSize, spacing } = useTheme();
   const { bookmarks, addBookmark, removeBookmark } = useBookmarkStore();
 
-  // Guard clause: return null if item is undefined or null
   if (!item) {
     return null;
   }
@@ -30,7 +32,7 @@ const ListView = ({ item }) => {
       styles.container,
       { paddingVertical: spacing.m, borderBottomColor: colors.border || "#E5E5E5" }
     ]}>
-      <Pressable onPress={() => console.log(`pressed on article: ${item.title}`)}>
+      <Pressable onPress={() => router.push(`article/${item._id}`)}>
         <Image
           source={{ uri: item.imageUrl }}
           style={[styles.imageCard, { borderRadius: spacing.m }]}
@@ -48,7 +50,7 @@ const ListView = ({ item }) => {
       </View>
 
       <View style={styles.footer}>
-        <Caption ago={item.ago} color={colors.textSecondary} readTime={item.readTime} />
+        <Caption ago={ago(item._creationTime)} color={colors.textSecondary} readTime={item.readTime} />
         <Ionicons
           name={isBookmarked ? "bookmark" : "bookmark-outline"}
           size={20}
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     marginTop: 6,
-    fontFamily: 'syne_500Medium',
+    fontFamily: 'Syne_500Medium', // Capitalized to match Expo font naming conventions
   },
   content: {
     flex: 1,

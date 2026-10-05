@@ -1,55 +1,28 @@
-import { Slot } from 'expo-router';
-import TaskProvider from "../contexts/taskContexts";
-import ColorProvider from "../contexts/colorContext"; 
-import { useState, useEffect } from 'react';
-import { getItems, setItems } from "../utils/storage";
-import OnBoarding from '../components/onBoarding';
-import { useFonts, Righteous_400Regular } from '@expo-google-fonts/righteous';
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL, {
-  unsavedChangesWarning: false,
-});
+import TaskProvider from "../contexts/taskContexts";
+import ColorProvider from "../contexts/colorContext";
+import useTheme from "../store/useTheme"; // ✅ Correct 1 level up to src/store
+
+const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL || "https://placeholder.convex.cloud";
+const convex = new ConvexReactClient(convexUrl);
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    Righteous_400Regular
-  });
-  const [showOnBoarding, setShowOnBoarding] = useState(false);
-
-  const checkOnBoardingStatus = async () => {
-    try {
-      const onboardingCompleted = await getItems('onboardingcompleted');
-      setShowOnBoarding(onboardingCompleted !== 'true');
-    } catch (error) {
-      console.error('Error checking onboarding status:', error);
-    }
-  };
-
-  useEffect(() => {
-    checkOnBoardingStatus();
-  }, []);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
-  if (showOnBoarding) {
-    return (
-      <OnBoarding onFinish={async () => {
-        await setItems('onboardingcompleted', 'true');
-        setShowOnBoarding(false);
-      }} />
-    );
-  }
+  const { themeMode } = useTheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ConvexProvider client={convex}>
         <ColorProvider>
           <TaskProvider>
-            <Slot />
+            <StatusBar style={themeMode === "dark" ? "light" : "dark"} />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="article/[id]" />
+            </Stack>
           </TaskProvider>
         </ColorProvider>
       </ConvexProvider>

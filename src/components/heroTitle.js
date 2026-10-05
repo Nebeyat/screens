@@ -1,11 +1,13 @@
 import React from 'react';
 import { StyleSheet, View,Text } from 'react-native';
 import useTheme from '../store/useTheme';
-const HeroTitle = ({ title }) => {
+const HeroTitle = ({ title,noItemFound }) => {
     const {colors,fontSize}= useTheme();
     return (
         <View>
-            <Text>{title}</Text>
+            <Text style={{
+                color:noItemFound?colors.textPrimary:"white",
+                fontSize:fontSize.carouselTitle,fontFamily:'syne_700Bold'}}>{title}</Text>
         
         </View>
     );

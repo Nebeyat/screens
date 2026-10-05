@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Alert, FlatList, Text, Pressable } from "react-native";
-import Date from "../../components/date";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, Alert, FlatList, Text, Pressable, ActivityIndicator } from "react-native";
+import DateComponent from "../../components/date";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useTheme from "../../store/useTheme";
 import Header from "../../components/header";
@@ -9,16 +9,31 @@ import SearchInput from "../../components/searchInput";
 import Chips from "../../components/chips";
 import Card from "../../components/card";
 import ListView from "../../components/listView";
-import { useQuery } from "convex/react"; // Fixed case sensitivity
+import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+
+const AllCategories = {
+  _id: "all",
+  categoryName: "All",
+};
 
 const Index = () => {
   const [searchText, setSearchText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [newCat, setNewCat] = useState([]);
+
   const { colors, fontSize, spacing, toggleTheme, themeMode } = useTheme();
   const styles = createStyles(colors, fontSize, spacing);
   const name = themeMode === 'light' ? 'moon-outline' : 'sunny-outline';
 
+  const categories = useQuery(api.categories.getAllCategories);
   const articles = useQuery(api.articles.getAllArticles);
+
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      setNewCat([AllCategories, ...categories]);
+    }
+  }, [categories]);
 
   const notification = () => {
     Alert.alert("Notifications", "You have no new notifications");
@@ -33,20 +48,30 @@ const Index = () => {
     </View>
   );
 
-  if (!articles) {
+ 
+  if (!articles || !categories) {
     return (
       <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={{ color: colors.textSecondary }}>loading...</Text>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={colors.accentPrimary} />
+          <Text style={{ color: colors.textSecondary, marginTop: 8 }}>Loading...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  // Filter articles based on search query safely
-  const filteredArticles = articles.filter((item) =>
-    item.title?.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const heroNews = filteredArticles?.[0];
+
+ 
+  const filteredArticles = articles.filter((article) => {
+    const matchesCategory =
+      selectedCategory === "All" || article.categoryName === selectedCategory;
+    const matchesSearch =
+      article.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+      article.author?.toLowerCase().includes(searchText.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
@@ -55,11 +80,11 @@ const Index = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: spacing.m,
+          paddingVertical: spacing.m,
         }}
       >
         <View>
-          <Date />
+          <DateComponent />
           <Header header={"fafiNews"} />
         </View>
         <View style={{ flexDirection: "row" }}>
@@ -71,15 +96,27 @@ const Index = () => {
       <FlatList
         data={filteredArticles}
         keyExtractor={(item) => item._id}
+        ListEmptyComponent={() => (
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "center", marginTop: 40 }}>
+            <Text style={{ color: colors.textSecondary, fontSize: fontSize.body }}>
+              No articles found for the selected criteria.
+            </Text>
+          </View>
+        )}
         ListHeaderComponent={
           <>
             <SearchInput
               value={searchText}
               onChangeText={setSearchText}
-              placeholder={'search news,topics,author ..'}
+              placeholder={'search news, topics, author...'}
             />
-            <Chips />
-            <Card title={"Top Stories"} />
+            <Chips
+              categories={newCat}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+            
+           <Card item={heroNews}/>
             <ListHeader />
           </>
         }
@@ -104,7 +141,7 @@ const createStyles = (colors, fontSize, spacing) =>
     },
     titleText: {
       fontSize: fontSize.newsListTitle,
-      fontFamily: "syne_600SemiBold", // Fixed font name typo
+      fontFamily: "syne_600SemiBold",
       color: colors.textPrimary,
       marginTop: spacing.xx,
     },

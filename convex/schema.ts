@@ -14,10 +14,11 @@ export default defineSchema({
     content: v.string(),
     categoryName: v.string(),
     imageUrl: v.optional(v.string()),
-    ago: v.optional(v.string()),
+   
     readTime: v.optional(v.string()),
-    postedTime: v.optional(v.string()),
-  }),
+    
+  })
+  .index("by_categoryName",["categoryName"]),
 
   category: defineTable({
     categoryName: v.string(),
@@ -25,5 +26,6 @@ export default defineSchema({
     iconColor: v.optional(v.string()),
     iconBackground: v.optional(v.string()),
     articleCount: v.optional(v.number()),
-  }),
+  })
+  .index("categoryNameIndex",["categoryName"]),
 });

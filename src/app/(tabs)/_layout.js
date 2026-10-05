@@ -1,81 +1,61 @@
 import { Tabs } from "expo-router";
-import TaskProvider from "../../contexts/taskContexts";
-import Ionicons from '@expo/vector-icons/Ionicons';
-import ColorProvider, { useColors } from "../../contexts/colorContext"; 
-import { SystemBars } from "react-native-edge-to-edge";
-import { useState, useEffect } from 'react';
-import { getItems } from "../../utils/storage";
-import { 
-  useFonts, 
-  Syne_400Regular, 
-  Syne_500Medium, 
-  Syne_600SemiBold, 
-  Syne_700Bold, 
-  Syne_800ExtraBold 
-} from '@expo-google-fonts/syne'; 
+import Ionicons from "@expo/vector-icons/Ionicons"; // ✅ Fixed missing Ionicons import
+import { StatusBar } from "expo-status-bar"; // ✅ Replaced SystemBars to prevent TurboModule crash
+import useTheme from "../../store/useTheme";
 
 export default function Layout() {
-  const [fontsLoaded] = useFonts({
-    Syne_400Regular, 
-    Syne_500Medium, 
-    Syne_600SemiBold, 
-    Syne_700Bold, 
-    Syne_800ExtraBold
-  });
-
-  const { colors, statusBarStyle } = useColors();
-
-  if (!fontsLoaded) {
-    return null;
-  }
+  const { colors, themeMode } = useTheme();
 
   return (
     <>
-      <SystemBars style={statusBarStyle} />
-      <Tabs 
+      <StatusBar style={themeMode === "dark" ? "light" : "dark"} />
+      <Tabs
         screenOptions={{
           tabBarStyle: {
             backgroundColor: colors.background,
             borderTopWidth: 0,
-            elevation: 0, 
           },
           tabBarActiveTintColor: colors.accentPrimary,
           tabBarInactiveTintColor: colors.textMuted,
-        }} 
+        }}
       >
-        <Tabs.Screen 
+        <Tabs.Screen
           name="index"
           options={{
+            title: "Home",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'home' : 'home-outline'} size={24} color={color} />
+              <Ionicons name={focused ? "home" : "home-outline"} size={24} color={color} />
             ),
           }}
         />
-        <Tabs.Screen 
-          name="category" 
-          options={{ 
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'grid' : 'grid-outline'} size={24} color={color} />
-            ), 
-          }} 
-        />
-        <Tabs.Screen 
-          name="favorite" 
+        <Tabs.Screen
+          name="category"
           options={{
+            title: "Categories",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'timer' : 'timer-outline'} size={24} color={color} />
+              <Ionicons name={focused ? "grid" : "grid-outline"} size={24} color={color} />
             ),
           }}
         />
-        <Tabs.Screen 
-          name="profile" 
+        <Tabs.Screen
+          name="favorite"
           options={{
+            title: "Favorite",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color} />
+              <Ionicons name={focused ? "timer" : "timer-outline"} size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: "Profile",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "person" : "person-outline"} size={24} color={color} />
             ),
           }}
         />
@@ -83,3 +63,4 @@ export default function Layout() {
     </>
   );
 }
+
